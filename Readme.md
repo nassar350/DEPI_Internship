@@ -7,12 +7,12 @@ This project defines and populates a relational database schema for a **company 
 ## 🖼 ERD and Mapping Diagram
 
 ### 1. ER-Diagram
-![ER-Diagram](.\ER-Diagram&mapping\Company_ER-Diagram.png)
+![ER-Diagram](ER-Diagram&mapping/Company_ER-Diagram.png)
 
 ---
 
 ### 2. Mapping
-![ER-Diagram](.\ER-Diagram&mapping\company_mapping.png)
+![ER-Diagram](ER-Diagram&mapping/company_mapping.png)
 
 ---
 
