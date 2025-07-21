@@ -453,6 +453,247 @@ exec sp_SearchProducts @category_id = 2
 
 
 
+-- 17. Staff Bonus Calculation System
+-- Create a complete solution that calculates quarterly bonuses for all staff members. 
+-- Use variables to store date ranges and bonus rates. 
+-- Apply different bonus percentages based on sales performance tiers.
+
+
+
+
+declare @start_date date = '2022-01-01'
+declare @end_date date = '2023-12-31'
+declare @bonus_rate1 decimal(4, 4) = 0.05
+declare @bonus_rate2 decimal(4,4) = 0.10
+declare @bonus_rate3 DECIMAL (4, 4) = 0.15
+
+select ss.staff_id, ss.first_name, ss.last_name, sum(soi.quantity * soi.list_price * (1 - soi.discount)) as 'total_sale',
+case
+    when sum(soi.quantity * soi.list_price * (1 - soi.discount)) <= 10000
+        then sum(soi.quantity * soi.list_price * (1 - soi.discount) * @bonus_rate1)
+    when sum(soi.quantity * soi.list_price * (1 - soi.discount)) > 10000 and sum(soi.quantity * soi.list_price * (1 - soi.discount)) <= 50000
+        then sum(soi.quantity * soi.list_price * (1 - soi.discount) * @bonus_rate2)
+    when sum(soi.quantity * soi.list_price * (1 - soi.discount)) > 50000
+        then sum(soi.quantity * soi.list_price * (1 - soi.discount) * @bonus_rate3)
+end as 'Bouns'
+from sales.staffs as ss 
+join sales.orders as so on ss.staff_id = so.staff_id
+join sales.order_items as soi on soi.order_id = so.order_id
+where so.order_date BETWEEN @start_date and @end_date
+group by ss.staff_id, ss.first_name, ss.last_name
+
+
+
+
+-- 18. Smart Inventory Management
+-- Write a complex query with nested IF statements that manages inventory restocking. 
+-- Check current stock levels and apply different reorder quantities based on product categories and current stock levels.
+
+
+select pc.category_id, pc.category_name, pp.product_name,
+case
+    when pc.category_name like '%Jeans' and ps.quantity < 5 then 15
+    when pc.category_name like '%Shorts' and ps.quantity < 2 then 9
+    else ps.quantity+2
+end as 'restocked_quantity'
+from production.products as pp
+join production.categories as pc on pp.category_id = pc.category_id
+join sales.order_items as soi on soi.product_id = pp.product_id
+join sales.orders as so on so.order_id = soi.order_id
+join production.stocks as ps on ps.store_id = so.store_id and ps.product_id = pp.product_id
+
+
+select top 10 * from production.categories;
+
+
+
+
+-- 19. Customer Loyalty Tier Assignment
+-- Create a comprehensive solution that assigns loyalty tiers to customers based on their total spending. 
+-- Handle customers with no orders appropriately and use proper NULL checking.
+
+
+select sc.customer_id, sc.first_name, sc.last_name, sum(soi.quantity * soi.list_price * (1 - soi.discount)) as 'total_spending',
+case
+    when sum(soi.quantity * soi.list_price * (1 - soi.discount)) <= 500 then 'Basic'
+    when sum(soi.quantity * soi.list_price * (1 - soi.discount)) > 500 and sum(soi.quantity * soi.list_price * (1 - soi.discount)) <= 10000
+        then 'Intermediate'
+    when sum(soi.quantity * soi.list_price * (1 - soi.discount)) > 10000 then 'High'
+end as 'loyalty_tier'
+from sales.customers as sc 
+left join sales.orders as so on sc.customer_id = so.customer_id
+join sales.order_items soi on soi.order_id = so.order_id
+where so.order_id is not NULL
+group by sc.customer_id, sc.first_name, sc.last_name
+
+
+
+
+-- 20. Product Lifecycle Management
+-- Write a stored procedure that handles product discontinuation including checking for pending orders, 
+-- optional product replacement in existing orders, clearing inventory, and providing detailed status messages.
+
+
+create PROCEDURE sp_productCheck
+    @product_id INT,
+    @product_replacement_id int = null,
+    @is_pending int = 0
+AS
+BEGIN
+    select @is_pending = 1 from sales.orders as so
+    join sales.order_items as soi on so.order_id = soi.order_id
+    where soi.product_id = @product_id and so.order_status = 'Pending';
+
+    IF @is_pending = 1
+    BEGIN
+        PRINT 'the product has a pending order';
+    END
+
+    if @is_pending = 0
+    BEGIN
+        delete from production.products where product_id = @product_id
+        print 'the product has been deleted'
+    END
+
+END;
+go
+
+exec sp_productCheck @product_id = 7
+
+
+
+-- 21. Advanced Analytics Query
+-- Create a query that combines multiple advanced concepts to generate a comprehensive sales report showing monthly trends, 
+-- staff performance, and product category analysis.
+
+
+with monthly_trends as (
+    select pp.product_id, pp.product_name, pc.category_name, pb.brand_name,
+    month(so.order_date) as 'Month', sum(soi.quantity * soi.list_price * (1 - soi.discount)) as 'total_sale'
+    FROM
+    production.products as pp 
+    join production.categories as pc on pp.category_id = pc.category_id
+    join production.brands as pb on pp.brand_id = pb.brand_id
+    join sales.order_items as soi on pp.product_id = soi.product_id
+    join sales.orders as so on so.order_id = soi.order_id
+    where year(so.order_date) = 2022
+    group by pp.product_id, pp.product_name, pc.category_name, pb.brand_name, month(so.order_date)
+),
+
+ staff_performance as (
+    select ss.staff_id, (ss.first_name + ' ' + ss.last_name) as 'full_name', ss.email, ss.phone,
+    sum(soi.quantity * soi.list_price * (1 - soi.discount)) as 'total_sale',
+    RANK() over (order by sum(soi.quantity * soi.list_price * (1 - soi.discount)) desc) as 'staff_rank'
+    from sales.staffs as ss 
+    join sales.orders as so on ss.staff_id = so.staff_id
+    join sales.order_items as soi on soi.order_id = so.order_id
+    where YEAR(so.order_date) = 2022
+    group by ss.staff_id, ss.first_name, ss.last_name, ss.email, ss.phone
+),
+
+ product_category_analysis as (
+    select so.staff_id, pp.product_id, pp.product_name, pc.category_name, count(so.order_id) as 'total_orders'
+    FROM
+    production.products as pp 
+    join production.categories as pc on pp.category_id = pc.category_id
+    join sales.order_items as soi on pp.product_id = soi.product_id
+    join sales.orders as so on so.order_id = soi.order_id
+    where year(so.order_date) = 2022
+    group by so.staff_id, pp.product_id, pp.product_name, pc.category_name
+)
+
+
+select mt.product_id, mt.product_name, mt.category_name, mt.brand_name, mt.Month, mt.total_sale,
+pca.total_orders, sp.staff_id, sp.full_name, sp.email, sp.phone, sp.total_sale, sp.staff_rank
+FROM monthly_trends as mt
+join product_category_analysis as pca on pca.product_id = mt.product_id
+join staff_performance as sp on pca.staff_id = sp.staff_id 
+
+
+
+
+-- 22. Data Validation System
+-- Build a complete data validation system using functions and procedures that ensures data integrity when inserting new orders, 
+-- including customer validation, inventory checking, and business rule enforcement.
+
+
+create FUNCTION Customer_validation(@customer_id int)
+returns INT
+AS
+BEGIN
+    declare @customer_valid int = 0
+
+    select @customer_valid = 1 from sales.customers where customer_id = @customer_id
+
+    return @customer_valid
+end
+go
+
+
+create FUNCTION inventory_checking(@product_id int, @product_quantity int)
+returns INT
+AS
+BEGIN
+    declare @inventory_valid int = 0
+    declare @inventory_quantity int = 0
+
+    select @inventory_quantity = quantity
+    from production.stocks where product_id = @product_id
+
+    if @inventory_quantity >= @product_quantity
+    BEGIN
+        set @inventory_valid = 1
+    END
+
+    return @inventory_valid
+END
+go
+
+
+
+create PROCEDURE sp_new_order_checking
+    @order_id INT,
+    @customer_id INT,
+    @order_status INT = 1,
+    @order_date date,
+    @store_id INT,
+    @staff_id INT,
+    @product_id int,
+    @item_id int,
+    @quantity int,
+    @list_price decimal(10,2),
+    @discount decimal(4, 2),
+    @customer_valid int,
+    @inventory_valid INT
+AS
+BEGIN
+    -- customer_validate
+    set @customer_valid = dbo.Customer_validation(@customer_id)
+    if @customer_valid = 0
+    BEGIN
+        print 'Customer not found'
+    END
+    ELSE
+    BEGIN
+        -- inventory_validate
+        set @inventory_valid = dbo.inventory_checking(@product_id, @quantity)
+        if @inventory_valid = 0
+        BEGIN
+            print 'Unsufficient Inventory'
+        END
+        else
+        BEGIN
+            insert into sales.orders (order_id,customer_id,order_status,order_date,store_id,staff_id)
+            values(@order_id, @customer_id, @order_status, @order_date, @store_id, @staff_id)
+
+            insert into sales.order_items(order_id, item_id, product_id, quantity, list_price, discount)
+            values(@order_id, @item_id, @product_id, @quantity, @list_price, @discount)
+
+            print 'order added successfully'
+        END
+    end
+end
+go
 
 ```
 ---
