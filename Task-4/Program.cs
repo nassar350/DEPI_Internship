@@ -71,6 +71,20 @@ namespace Task_4
                                     string? CustomerName = Console.ReadLine();
                                     Console.Write("Enter Customer National ID: ");
                                     string? CustomerNationalID = Console.ReadLine();
+                                    if (CustomerNationalID.Length != 14)
+                                    {
+                                        Console.WriteLine("National ID is Not Valid, Enter a Valid One");
+                                        Console.WriteLine("----------------------------------------------------");
+                                        break;
+                                    }
+                                    Customer? customerFound;
+                                    if (banks[bankid].SearchCustomerbyNationalID(CustomerNationalID, out customerFound))
+                                    {
+                                        Console.WriteLine("A Customer With This National ID Already Exists");
+                                        Console.WriteLine("----------------------------------------------------");
+                                        break;
+                                    }
+                                    
                                     Console.Write("Enter Customer Birth Date (yyyy-mm-dd): ");
                                     DateTime CustomerBirthDate = Convert.ToDateTime(Console.ReadLine());
                                     DateOnly CustomerBirthDate2 = DateOnly.FromDateTime(CustomerBirthDate);
@@ -223,7 +237,7 @@ namespace Task_4
 
                             Console.Write("Enter Customer National ID: ");
                             string? customerNationalid = Console.ReadLine();
-                            Console.WriteLine("----------------------------------------------------");
+                            Console.WriteLine();
                             Customer? customer;
                             bool? found = banks[bankid].SearchCustomerbyNationalID(customerNationalid, out customer);
                             if (found == false)
@@ -265,13 +279,101 @@ namespace Task_4
                                         customer.AddAccount(account);
                                         Console.WriteLine("Account Created Successfully!");
                                     }
+                                    Console.WriteLine("----------------------------------------------------");
                                     break;
                                 case "2":
-                                    Console.WriteLine();
+                                    if (customer.Accounts.Count() == 0)
+                                    {
+                                        Console.WriteLine("Customer Does Not Have Any Accounts");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Choose one of Your Accounts: ");
+                                        for (int i = 0; i < customer.Accounts.Count(); i++)
+                                        {
+                                            Console.WriteLine($"{i+1} - {customer.Accounts[i].AccountNumber}");
+                                        }
+                                        Console.Write("Enter Your Choice: ");
+                                        int accountid = Convert.ToInt32(Console.ReadLine()) - 1;
+                                        Console.WriteLine("----------------------------------------------------");
+
+                                        Console.Write("Enter Amount you Want to Deposit: ");
+                                        decimal amount = Convert.ToDecimal(Console.ReadLine());
+                                        customer.Deposite(amount, customer.Accounts[accountid]);
+                                        Console.WriteLine("Money Has Been Deposited Successfully!");
+
+                                    }
+                                    Console.WriteLine("----------------------------------------------------");
                                     break;
-                                case "3": 
+                                case "3":
+                                    if (customer.Accounts.Count() == 0)
+                                    {
+                                        Console.WriteLine("Customer Does Not Have Any Accounts");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Choose one of Your Accounts: ");
+                                        for (int i = 0; i < customer.Accounts.Count(); i++)
+                                        {
+                                            Console.WriteLine($"{i + 1} - {customer.Accounts[i].AccountNumber}");
+                                        }
+                                        Console.Write("Enter Your Choice: ");
+                                        int accountid = Convert.ToInt32(Console.ReadLine()) - 1;
+                                        Console.WriteLine("----------------------------------------------------");
+
+                                        Console.Write("Enter Amount you Want to Withdraw: ");
+                                        decimal amount = Convert.ToDecimal(Console.ReadLine());
+                                        if (customer.Withdraw(amount, customer.Accounts[accountid]))
+                                        {
+                                            Console.WriteLine("Money Has Been Withdrawed Successfully!");
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("Can not make a Withdraw, No Sufficient Amount");
+                                        }
+
+                                    }
+                                    Console.WriteLine("----------------------------------------------------");
                                     break;
                                 case "4":
+                                    if (customer.Accounts.Count() == 0)
+                                    {
+                                        Console.WriteLine("Customer Does Not Have Any Accounts");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Choose one of Your Accounts: ");
+                                        for (int i = 0; i < customer.Accounts.Count(); i++)
+                                        {
+                                            Console.WriteLine($"{i + 1} - {customer.Accounts[i].AccountNumber}");
+                                        }
+                                        Console.Write("Enter Your Choice: ");
+                                        int accountid = Convert.ToInt32(Console.ReadLine()) - 1;
+                                        Console.WriteLine("----------------------------------------------------");
+
+                                        Console.Write("Enter Recevier Account Number: ");
+                                        int recevieraccountnumber = Convert.ToInt32(Console.ReadLine());
+                                        Console.Write("Enter Amount you Want to Transfer: ");
+                                        decimal amount = Convert.ToDecimal(Console.ReadLine());
+                                        Console.WriteLine("----------------------------------------------------");
+
+                                        BankAccount? accountFound;
+                                        bool accountfound = false;
+                                        foreach (Bank bnk in banks)
+                                        {
+                                            if (bnk.SearchForAccountNumber(recevieraccountnumber, out accountFound) == true)
+                                            {
+                                                accountfound = true;
+                                                customer.Transfer(amount,customer.Accounts[accountid], accountFound);
+                                                break;
+                                            }
+                                        }
+                                        if (accountfound == false)
+                                        {
+                                            Console.WriteLine("Recevier Account is Not A Valid Account");
+                                        }
+                                    }
+                                    Console.WriteLine("----------------------------------------------------");
                                     break;
                                 case "5":
                                     accountselection = false;
@@ -284,6 +386,80 @@ namespace Task_4
                         Console.WriteLine("----------------------------------------------------");
                         break;
                     case "4":
+                        bool reportselection = true;
+                        while(reportselection == true)
+                        {
+                            Console.WriteLine("1 - Bank Report");
+                            Console.WriteLine("2 - Customer Report");
+                            Console.WriteLine("3 - Customer Transaction History");
+                            Console.WriteLine("4 - Back To Main Menu");
+                            Console.Write("Enter Your Choice: ");
+                            string? reportselect = Console.ReadLine();
+                            Console.WriteLine("----------------------------------------------------");
+                            if (reportselect == "4") break;
+
+                            if (banks.Count() == 0)
+                            {
+                                Console.WriteLine("There is no Registered Banks in the System");
+                                Console.WriteLine("----------------------------------------------------");
+                                break;
+                            }
+                            Console.WriteLine("Select A Bank: ");
+                            for (int i = 0; i < banks.Count(); i++)
+                            {
+                                Console.WriteLine($"{i + 1} - {banks[i].BankName}");
+                            }
+                            Console.Write("Enter your Bank Selection Number: ");
+                            int bankid = Convert.ToInt32(Console.ReadLine()) - 1;
+                            Console.WriteLine("----------------------------------------------------");
+
+                            switch (reportselect)
+                            {
+                                case "1":
+                                    banks[bankid].BankReport();
+                                    break;
+                                case "2":
+                                    Console.Write("Enter Customer National ID: ");
+                                    string? customerNationalid = Console.ReadLine();
+                                    Console.WriteLine();
+                                    Customer? customer;
+                                    bool? found = banks[bankid].SearchCustomerbyNationalID(customerNationalid, out customer);
+                                    if (found == false)
+                                    {
+                                        Console.WriteLine("Customer Not Found");
+                                        Console.WriteLine("----------------------------------------------------");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("----------------------------------------------------");
+                                        customer.GetCustomerDetails();
+                                    }
+                                    break;
+                                case "3":
+                                    Console.Write("Enter Customer National ID: ");
+                                    string? customernationalid = Console.ReadLine();
+                                    Console.WriteLine();
+                                    Customer? customer5;
+                                    bool? found2 = banks[bankid].SearchCustomerbyNationalID(customernationalid, out customer5);
+                                    if (found2 == false)
+                                    {
+                                        Console.WriteLine("Customer Not Found");
+                                        Console.WriteLine("----------------------------------------------------");
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("----------------------------------------------------");
+                                        customer5.TransactionHistory();
+                                    }
+                                    break;
+                                case "4":
+                                    reportselection = false;
+                                    break;
+                                default:
+                                    Console.WriteLine("Invalid Option, Please Enter A Valid One");
+                                    break;
+                            }
+                        }
                         break;
                     case "5":
                         program = false;

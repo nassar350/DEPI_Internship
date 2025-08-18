@@ -23,9 +23,9 @@ namespace Task_4
             Type = type;
         }
 
-        public void updateBalance (string type,  decimal balance, out bool? canWithdraw)
+        public void updateBalance (string type,  decimal balance, out bool canWithdraw)
         {
-            canWithdraw = null;
+            canWithdraw = false;
             if (type == "Deposite")
             {
                 Balance += balance;
@@ -40,7 +40,7 @@ namespace Task_4
                 else
                 {
                     canWithdraw = false;
-                    Console.WriteLine("Can not make a Withdraw, No Sufficient Amount");
+                    //Console.WriteLine("Can not make a Withdraw, No Sufficient Amount");
                 }
             }
         }

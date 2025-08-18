@@ -76,5 +76,35 @@ namespace Task_4
             return false;
         }
 
+        public bool SearchForAccountNumber(int accountNumber, out BankAccount? accountFound)
+        {
+            foreach (Customer customer in Customers)
+            {
+                foreach (BankAccount account in customer.Accounts)
+                {
+                    if (account.AccountNumber == accountNumber)
+                    {
+                        accountFound = account;
+                        return true;
+                    }
+                }
+            }
+            accountFound = null;
+            return false;
+        }
+
+        public void BankReport()
+        {
+            if (Customers.Count == 0)
+            {
+                Console.WriteLine("There is No Customers");
+                Console.WriteLine("----------------------------------------------------");
+            }
+            foreach (Customer customer in Customers)
+            {
+                customer.GetCustomerDetails();
+            }
+        }
+
     }
 }

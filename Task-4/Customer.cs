@@ -43,46 +43,47 @@ namespace Task_4
 
         public void Deposite(decimal amount, BankAccount account)
         {
-            account.updateBalance("Deposite", amount, out bool? canWithdraw);
+            account.updateBalance("Deposite", amount, out bool canWithdraw);
             transactions.Add(new Transaction("Deposite", amount, account));
         }
 
-        public void Withdraw(decimal amount, BankAccount account)
+        public bool Withdraw(decimal amount, BankAccount account)
         {
-            account.updateBalance("Withdraw", amount, out bool? canWithdraw);
+            account.updateBalance("Withdraw", amount, out bool canWithdraw);
 
             if (canWithdraw == true)
             {
                 transactions.Add(new Transaction("Withdraw", amount, account));
             }
+            return canWithdraw;
         }
 
         public void Transfer(decimal amount, BankAccount senderaccount, BankAccount recieveraccount)
         {
-            senderaccount.updateBalance("Withdraw", amount, out bool? canWithdraw);
+            senderaccount.updateBalance("Withdraw", amount, out bool canWithdraw);
             if (canWithdraw == true)
             {
                 transactions.Add(new Transaction("Withdraw", amount, senderaccount));
 
-                recieveraccount.updateBalance("Deposite", amount, out bool? canWithdraw2);
+                recieveraccount.updateBalance("Deposite", amount, out bool canWithdraw2);
                 transactions.Add(new Transaction("Deposite", amount, recieveraccount));
 
-                Console.WriteLine("Operation Completed Successfully");
+                Console.WriteLine("Money Has Been Transfered Successfully!");
             }
             else
             {
-                Console.WriteLine("Can not Complete Operation");
+                Console.WriteLine("Can not Complete Operation, NO Sufficient Amount to Transfer");
             }
         }
 
-        public void GetCustomerDetails(Customer customer)
+        public void GetCustomerDetails()
         {
             decimal TotalAmount = 0;
 
-            Console.WriteLine($"Customer Name is: {customer.CustomerName}\n" +
-                $"Customer National ID is: {customer.NationalID}\n" +
-                $"Customer BirthDate is: {customer.BirthDate}");
-            Console.WriteLine("-----------------------------------------------------------------");
+            Console.WriteLine($"Customer Name is: {CustomerName}\n" +
+                $"Customer National ID is: {NationalID}\n" +
+                $"Customer BirthDate is: {BirthDate}");
+            Console.WriteLine("----------------------------------------------------");
 
             foreach (BankAccount account in Accounts)
             {
@@ -91,11 +92,29 @@ namespace Task_4
                     $"Account Type: {account.Type}\n" +
                     $"Account Balance: {account.GetBalance()}\n" +
                     $"Created Date: {account.CreatedDate}");
-                Console.WriteLine("-----------------------------------------------------------------");
+                Console.WriteLine("----------------------------------------------------");
             }
             Console.WriteLine($"Total Customer Balance is: {TotalAmount}");
-            Console.WriteLine("-----------------------------------------------------------------");
-            
+            Console.WriteLine("----------------------------------------------------");
+
+        }
+
+        public void TransactionHistory()
+        {
+            if (transactions.Count == 0) 
+            {
+                Console.WriteLine("There is No Transactions");
+                Console.WriteLine("----------------------------------------------------");
+            }
+            foreach (Transaction transaction in transactions)
+            {
+                Console.WriteLine($"Account Number: {transaction.Account.AccountNumber}\n" +
+                    $"Transaction Type: {transaction.Type}\n" +
+                    $"Amount: {transaction.Amount}\n" +
+                    $"Transaction Date: {transaction.DateTime}");
+
+                Console.WriteLine("-----------------------------------------------------------------");
+            }
         }
 
     }
