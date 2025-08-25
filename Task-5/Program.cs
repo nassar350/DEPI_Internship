@@ -230,7 +230,8 @@
                                             Console.Write("Correct option Number (1 - 4) is: ");
                                             int correct = int.Parse(Console.ReadLine()) - 1;
 
-                                            q = new MultipleChoice(qText, marks, options[correct]);
+                                            q = new MultipleChoice(qText, marks, options[correct], options);
+                                            
                                             break;
                                         case "2":
                                             Console.Write("Correct answer (true or false): ");
@@ -399,6 +400,8 @@
 
                                     Exam newExam = new Exam(newCourse.Title, examm.ExamType);
 
+                                    newExam.CurrentMark = examm.CurrentMark;
+
                                     foreach (var question in examm.questions)
                                     {
                                         newExam.AddQuestion(CloneQuestion(question));
@@ -476,6 +479,14 @@
                                 int examidx = int.Parse(Console.ReadLine()) - 1;
                                 Exam examm = coursee.exams[examidx];
 
+                                if (s.GetExamScores(examm) > 0)
+                                {
+                                    Console.WriteLine("Student has Entered Exam Before");
+                                    Console.WriteLine("Press Enter...");
+                                    Console.ReadLine();
+                                    break;
+                                }
+
                                 decimal score = 0;
                                 foreach (var question in examm.questions)
                                 {
@@ -497,6 +508,7 @@
                                 }
 
                                 s.editExamScore(examm, score);
+
                                 Console.WriteLine($"\nExam Completed! Your score is: {score}");
                                 Console.WriteLine("Press Enter...");
                                 Console.ReadLine();
@@ -640,7 +652,7 @@
         static Question CloneQuestion(Question q)
         {
             if (q is MultipleChoice mcq)
-                return new MultipleChoice(mcq.QuestionTitle, mcq.Marks, mcq.Answer);
+                return new MultipleChoice(mcq.QuestionTitle, mcq.Marks, mcq.Answer, mcq.Options);
 
 
             if (q is TrueOrFalse tf)

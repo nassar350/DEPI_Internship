@@ -12,9 +12,10 @@ namespace Task_5
 
         public List<string> Options = new List<string>();
 
-        public MultipleChoice(string title, decimal marks, string answer) : base (title, marks)
+        public MultipleChoice(string title, decimal marks, string answer, List<string> options) : base (title, marks)
         {
             Answer = answer;
+            Options = options;
         }
 
         public override bool CheckAnswer(string answer)
