@@ -1,0 +1,42 @@
+body {
+      background-color: #f0f2f5;
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+
+    .testimonial-card {
+      border-radius: 10px;
+      padding: 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      min-height: 280px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .purple-bg { background-color: #6a1b9a; }
+    .blue-bg { background-color: #1e293b; }
+    .gray-bg { background-color: #334155; }
+    .light-gray-bg { background-color: #e2e8f0; color: #000; }
+    .white-bg { background-color: white; color: #000; }
+
+    h5 {
+      margin-bottom: 10px;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    p strong {
+      font-size: 1rem;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    p {
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+
+    .container {
+      max-width: 1200px;
+    }
