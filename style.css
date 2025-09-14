@@ -1,0 +1,52 @@
+.nata-sans {
+  font-family: "Nata Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 500;
+  font-style: normal;
+}
+
+html {
+    box-sizing : border-box;
+}
+
+body{
+    background-color: #DDDAD0;
+    align-self: center
+    
+}
+
+.name {
+    text-align: center;
+    color: #57564F;
+    font: 1.25em sans-serif;
+    font-family: "Nata Sans", sans-serif;
+}
+
+.card {
+    background-color: white;
+    padding: 5%;
+    border: 20cm;
+    border-radius: 6%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hobbies {
+    font-family: "Nata Sans", sans-serif;
+    color: #57564F;
+}
+
+.hobbieslist {
+    font-family: "Nata Sans", sans-serif;
+    color: #5e5e5e;
+}
+
+.aboutme {
+    font-family: "Nata Sans", sans-serif;
+    color: #5e5e5e;
+}
+
+.linkedin {
+    color: navy;
+    font-family: "Nata Sans", sans-serif;
+}
