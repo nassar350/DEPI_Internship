@@ -44,16 +44,19 @@ app.Use(async (context, next) =>
     Console.WriteLine("This is the end of middleware in program");
 });
 
+// query string
 app.MapGet("/{id:int}", async (HttpContext context, int id) => 
 {
     return Results.Ok($"{context.Response.StatusCode}  {context.Response.Body}");
 });
 
+// route parameters
 app.MapGet("/id", async (HttpContext context, int id) => 
 {
     return Results.Ok($"{context.Response.StatusCode}  {context.Response.Body}");
 });
 
+// data binding
 app.MapPost("/add", (HttpContext context, string name) => 
 {
     return Results.Ok($"{name}");
