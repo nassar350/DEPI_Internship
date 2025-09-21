@@ -3,6 +3,7 @@ using EmployeeAPI.Data;
 using EmployeeAPI.Services;
 using EmployeeAPI.MiddleWare;
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,21 @@ app.Use(async (context, next) =>
     await next(context);
 
     Console.WriteLine("This is the end of middleware in program");
+});
+
+app.MapGet("/{id:int}", async (HttpContext context, int id) => 
+{
+    return Results.Ok($"{context.Response.StatusCode}  {context.Response.Body}");
+});
+
+app.MapGet("/id", async (HttpContext context, int id) => 
+{
+    return Results.Ok($"{context.Response.StatusCode}  {context.Response.Body}");
+});
+
+app.MapPost("/add", (HttpContext context, string name) => 
+{
+    return Results.Ok($"{name}");
 });
 
 app.MapControllers();
