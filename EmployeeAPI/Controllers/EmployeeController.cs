@@ -9,13 +9,6 @@ namespace EmployeeAPI.Controllers
     [ApiController]
     public class EmployeeController : ControllerBase
     {
-        //public readonly EmployeeAppContext _context;
-
-        //public EmployeeController(EmployeeAppContext context)
-        //{
-        //    _context = context;
-        //}
-
         public IEmployeeService _employeeService { get; set; }
         public EmployeeController(IEmployeeService employeeService) 
         {
@@ -28,23 +21,14 @@ namespace EmployeeAPI.Controllers
             return _employeeService.GetEmployee();
         }
 
-        //public async Task<ActionResult<IEnumerable<Employee>>> GetEmployee()
-        //{
-        //    await _context.SaveChangesAsync();
-        //    return Ok(_context.Employees.ToArray());
-        //}
-
+        
         [HttpGet("id")]
         public Task<ActionResult<Employee>> GetEmployeeById(int id) 
         {
             return _employeeService.GetEmployeeById(id);
         }
 
-        //public async Task<ActionResult<Employee>> GetEmployeeById(int id)
-        //{
-        //    Employee employee = _context.Employees.Find(id);
-        //    return Ok(employee);
-        //}
+        
 
         [HttpPost]
         public void AddEmployee(Employee employee) 
@@ -52,12 +36,7 @@ namespace EmployeeAPI.Controllers
             _employeeService.AddEmployee(employee);
         }
 
-        //public async Task<ActionResult<Employee>> AddEmployee(Employee employee)
-        //{
-        //    _context.Employees.Add(employee);
-        //    _context.SaveChanges();
-        //    return Ok(employee);
-        //}
+        
 
         [HttpDelete]
         public void DeleteEmployee(int id)
@@ -65,13 +44,7 @@ namespace EmployeeAPI.Controllers
             _employeeService.DeleteEmployee(id);
         }
 
-        //public async Task<ActionResult<Employee>> DeleteEmployee(int id)
-        //{
-        //    Employee employee = _context.Employees.Find(id);
-        //    _context.Employees.Remove(employee);
-        //    _context.SaveChanges();
-        //    return Ok();
-        //}
+        
 
         [HttpPut]
         public void UpdateEmployee(Employee employee, int id)
@@ -79,14 +52,6 @@ namespace EmployeeAPI.Controllers
             _employeeService.UpdateEmployee(employee, id);
         }
 
-        //public async Task<ActionResult<Employee>> UpdateEmployee(Employee employee, int id)
-        //{
-        //    Employee emp = _context.Employees.Find(id);
-        //    emp.Name = employee.Name;
-        //    emp.Email = employee.Email;
-        //    _context.Employees.Update(emp);
-        //    _context.SaveChanges();
-        //    return Ok(emp);
-        //}
+       
     }
 }

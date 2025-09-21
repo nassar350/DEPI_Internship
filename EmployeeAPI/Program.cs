@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using EmployeeAPI.Data;
 using EmployeeAPI.Services;
+using EmployeeAPI.MiddleWare;
+using System.Runtime.CompilerServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +31,17 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
+app.UseLogMiddleware();
+
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("Hi");
+    Console.WriteLine("This is middleware in main program");
+    await next(context);
+
+    Console.WriteLine("This is the end of middleware in program");
+});
 
 app.MapControllers();
 
