@@ -17,7 +17,7 @@ namespace EmployeeAPI.Controllers
         //}
 
         public IEmployeeService _employeeService { get; set; }
-        public EmployeeController(EmployeeService employeeService) 
+        public EmployeeController(IEmployeeService employeeService) 
         {
             _employeeService = employeeService;
         }
